@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Animals</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Animals List</h1>
+  <nav>
+            <a href="index.html">Home</a>
+      <a href="add_animal.html">Add Animal</a>
+      <a href="report_sightings.html">Report Sighting</a>
+      <a href="view_sightings.html">View Sightings</a>
+    </nav>  </header>
+  <main>
+    <h2>Endangered Animals</h2>
+    <ul id="endangered-list"></ul>
+
+    <h2>Non-Endangered Animals</h2>
+    <ul id="non-endangered-list"></ul>
+  </main>
+
+  <script>
+    // Fetch animals from Local Storage and display
+    function displayAnimals() {
+      const endangeredList = document.getElementById('endangered-list');
+      const nonEndangeredList = document.getElementById('non-endangered-list');
+      endangeredList.innerHTML = '';
+      nonEndangeredList.innerHTML = '';
+
+      // Get animals from localStorage
+      const animals = JSON.parse(localStorage.getItem('animals')) || [];
+
+      animals.forEach(animal => {
+        const listItem = document.createElement('li');
+        listItem.textContent = animal.name;
+
+        if (animal.status === 'endangered') {
+          endangeredList.appendChild(listItem);
+        } else {
+          nonEndangeredList.appendChild(listItem);
+        }
+      });
+    }
+
+    // Call displayAnimals on page load
+    displayAnimals();
+  </script>
+</body>
+</html>

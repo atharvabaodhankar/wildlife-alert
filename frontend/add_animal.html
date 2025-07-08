@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Animal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    main {
+      padding: 20px;
+      margin-top: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 600px;
+      background: #fff;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    form label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    form input,
+    form select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 10px;
+      }
+
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Add Animal</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="report_sightings.html">Report Sighting</a>
+      <a href="view_animals.html">View Animals</a>
+      <a href="view_sightings.html">View Sightings</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="form-container">
+      <form id="animalForm">
+        <label for="name">Animal Name:</label>
+        <input type="text" id="name" required />
+
+        <label for="status">Endangered Status:</label>
+        <select id="status">
+          <option value="endangered">Endangered</option>
+          <option value="non-endangered">Non-Endangered</option>
+        </select>
+
+        <button type="submit">Add Animal</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('animalForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('name').value.trim();
+      const status = document.getElementById('status').value;
+
+      const animals = JSON.parse(localStorage.getItem('animals')) || [];
+
+      animals.push({ name, status });
+      localStorage.setItem('animals', JSON.stringify(animals));
+
+      event.target.reset();
+      alert("Animal added successfully!");
+    });
+  </script>
+</body>
+</html>

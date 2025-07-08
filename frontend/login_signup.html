@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Signup</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f1f1;
+    }
+
+    .auth-container {
+      max-width: 500px;
+      margin: 120px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .toggle-link {
+      color: blue;
+      cursor: pointer;
+      display: block;
+      margin-top: 20px;
+      text-decoration: underline;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      margin: 0 10px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Login / Signup</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="report_sightings.html">Report Sighting</a>
+      <a href="view_sightings.html">View Sightings</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="auth-container">
+      <!-- Signup Form -->
+      <form id="signupForm" style="display: none;">
+        <h2>Sign Up</h2>
+        <input type="text" id="signupName" placeholder="Name" required />
+        <input type="email" id="signupEmail" placeholder="Email" required />
+        <input type="password" id="signupPassword" placeholder="Password" required />
+        <button type="submit">Sign Up</button>
+        <span class="toggle-link" onclick="toggleForm()">Already have an account? Log in</span>
+      </form>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <h2>Log In</h2>
+        <input type="email" id="loginEmail" placeholder="Email" required />
+        <input type="password" id="loginPassword" placeholder="Password" required />
+        <button type="submit">Log In</button>
+        <span class="toggle-link" onclick="toggleForm()">New user? Sign up</span>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const API = 'http://localhost:5000/api/auth';
+
+    function toggleForm() {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      if (loginForm.style.display === 'none') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+      }
+    }
+
+    // Signup Handler
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+
+      try {
+        const res = await fetch(`${API}/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert("Signup successful! You can now log in.");
+          toggleForm();
+        } else {
+          alert(data.message || "Signup failed");
+        }
+      } catch (err) {
+        console.error("Signup error:", err);
+        alert("Signup failed. Please check server or internet connection.");
+      }
+    });
+
+    // Login Handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(`${API}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.token) {
+          localStorage.setItem('token', data.token);
+          alert(`Welcome, ${data.name || 'User'}`);
+          window.location.href = 'report_sightings.html';
+        } else {
+          alert(data.message || "Login failed");
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Login failed. Please check your connection.");
+      }
+    });
+  </script>
+</body>
+</html>

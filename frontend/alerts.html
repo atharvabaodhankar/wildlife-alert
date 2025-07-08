@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Wildlife Alerts</title>
+
+  <!-- Socket.IO -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .alert {
+      border: 2px solid red;
+      border-radius: 6px;
+      padding: 12px;
+      margin: 20px 0;
+      background-color: #fff5f5;
+    }
+    .alert strong {
+      color: darkred;
+    }
+    .alert .map {
+      height: 200px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Wildlife Alerts</h1>
+  <div id="alerts"></div>
+
+  <script>
+    const socket = io("http://localhost:5000"); // Update this if hosted elsewhere
+
+    socket.on("alert", (data) => {
+      const alertDiv = document.createElement("div");
+      alertDiv.className = "alert";
+
+      const mapId = `map_${Date.now()}`; // Unique map ID for each alert
+
+      alertDiv.innerHTML = `
+        <p><strong>${data.message}</strong></p>
+        <p><strong>Location:</strong> ${data.location || "N/A"}, ${data.pincode || "N/A"}</p>
+        <p><strong>Severity:</strong> ${data.severity}</p>
+        <p><strong>Time:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+        <div id="${mapId}" class="map"></div>
+      `;
+
+      document.getElementById("alerts").prepend(alertDiv);
+
+      // Only show map if coordinates are available
+      if (data.latitude && data.longitude) {
+        const map = L.map(mapId).setView([data.latitude, data.longitude], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([data.latitude, data.longitude]).addTo(map)
+          .bindPopup(data.message)
+          .openPopup();
+      }
+    });
+  </script>
+</body>
+</html>

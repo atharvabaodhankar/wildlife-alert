@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wildlife Tracking</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 16px;
+      background-color: white;
+      color: #4CAF50;
+      border-radius: 6px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #ffffff;
+      color: #388E3C;
+    }
+
+    .background-wrapper {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .background {
+  background-image: url('image/img3.jpg');
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  filter: brightness(0.85); /* Optional: keep content readable */
+  z-index: -1;
+}
+
+    .content {
+      text-align: center;
+      padding: 120px 20px;
+    }
+
+    .content h1 {
+  font-size: 2.8em;
+  color: #000; /* Darker black */
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 3px rgba(255,255,255,0.6); /* optional highlight */
+}
+
+.content p {
+  font-size: 1.2em;
+  color: #111; /* darker */
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to Wildlife Tracker</h1>
+    <nav>
+      <a href="add_animal.html">Add Animal</a>
+      <a href="report_sightings.html">Report Sighting</a>
+      <a href="view_animals.html">View Animals</a>
+      <a href="view_sightings.html">View Sightings</a>
+      <a href="login_signup.html">Login / Signup</a>
+    </nav>
+  </header>
+
+  <div class="background-wrapper">
+    <div class="background"></div>
+    <div class="content">
+      <h1>Track and Report Wildlife Sightings</h1>
+      <p>Help us track Endangered and Non-Endangered animals by reporting sightings.</p>
+    </div>
+  </div>
+</body>
+</html>
