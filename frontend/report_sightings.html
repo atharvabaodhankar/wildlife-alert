@@ -2,136 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Report Sighting</title>
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    main {
-      padding: 20px;
-      margin-top: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .form-container {
-      width: 100%;
-      max-width: 600px;
-      background: #fff;
-      padding: 30px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-    }
-
-    form label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    form input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-
-    button {
-      padding: 8px 14px;
-      font-size: 0.9rem;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    @media (max-width: 600px) {
-      main {
-        padding: 10px;
-      }
-
-      .form-container {
-        padding: 20px;
-      }
-    }
-  </style>
 </head>
 <body>
   <header>
-    <h1>Report Sighting</h1>
+    <h1>Report Wildlife Sighting</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="add_animal.html">Add Animal</a>
       <a href="view_animals.html">View Animals</a>
       <a href="view_sightings.html">View Sightings</a>
+      <a href="login_signup.html">Login / Signup</a>
+      <a href="#" onclick="logout()">Logout</a>
     </nav>
   </header>
 
   <main>
-    <div class="form-container">
+    <section class="form-container">
       <form id="sightingForm" enctype="multipart/form-data">
         <label for="animal">Animal:</label>
-        <input type="text" id="animal" name="animal" required />
+        <input type="text" id="animal" name="animal" required>
 
         <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required />
+        <input type="text" id="location" name="location" required>
 
         <label for="date">Date:</label>
-        <input type="date" id="date" name="date" required />
+        <input type="date" id="date" name="date" required>
 
-        <label for="image">Upload Image:</label>
-        <input type="file" id="image" name="image" accept="image/*" required />
+        <label for="image">Upload Image (optional):</label>
+        <input type="file" id="image" name="image" accept="image/*">
 
-        <button type="submit">Report Sighting</button>
+        <button type="submit">Submit Sighting</button>
       </form>
-    </div>
+      <p id="message"></p>
+    </section>
   </main>
 
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
-  const token = localStorage.getItem('token');
-  const form = document.getElementById('sightingForm');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    if (!token) {
-      alert("Please login first.");
-      return;
+    function logout() {
+      localStorage.removeItem('token');
+      alert("You have been logged out.");
+      window.location.href = 'login_signup.html';
     }
 
-    const formData = new FormData(form);
-
-    try {
-      const res = await fetch('http://localhost:5000/api/sightings', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        alert("Sighting submitted successfully!");
-        form.reset();
-      } else {
-        console.error("Error:", data);
-        alert(data.error || "Error reporting sighting.");
+    function isTokenExpired(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp < now;
+      } catch (e) {
+        return true;
       }
-    } catch (err) {
-      console.error("Network error:", err);
-      alert("Failed to connect to server.");
     }
-  });
-</script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      const message = document.getElementById('message');
+
+      if (!token || isTokenExpired(token)) {
+        message.style.color = 'red';
+        message.textContent = 'Please log in again to report a sighting.';
+        logout();
+        return;
+      }
+
+      document.getElementById('sightingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('animal', document.getElementById('animal').value);
+        formData.append('location', document.getElementById('location').value);
+        formData.append('date', document.getElementById('date').value);
+
+        const imageInput = document.getElementById('image');
+        if (imageInput.files.length > 0) {
+          formData.append('image', imageInput.files[0]);
+        }
+
+        try {
+          const res = await fetch('http://localhost:5000/api/sightings', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            message.style.color = 'green';
+            message.textContent = 'Sighting submitted successfully!';
+            document.getElementById('sightingForm').reset();
+          } else {
+            message.style.color = 'red';
+            message.textContent = data.error || 'Submission failed';
+          }
+        } catch (error) {
+          console.error('Error submitting sighting:', error);
+          message.style.color = 'red';
+          message.textContent = 'Server error. Try again later.';
+        }
+      });
+    });
+
+    const socket = io('http://localhost:5000');
+    socket.on('alert', (alert) => {
+      alertUser(alert);
+    });
+
+    function alertUser(alert) {
+      alert(`EMERGENCY ALERT!\n${alert.message}\nLocation: ${alert.location}\nSeverity: ${alert.severity}`);
+    }
+  </script>
 </body>
 </html>

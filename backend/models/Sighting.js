@@ -10,16 +10,21 @@ const SightingSchema = new mongoose.Schema({
     required: true
   },
   date: {
-    type: String,
+    type: Date, // ✅ Enables date queries and analytics
     required: true
   },
   imageUrl: {
     type: String
   },
-  user: { // ✅ Renamed from userId to user
+  userId: { // ✅ Renamed from 'user' to 'userId'
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'approved' // 🔁 adjust based on your admin flow
   }
 });
 

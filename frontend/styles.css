@@ -1,115 +1,155 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
+  font-family: 'DM Sans', sans-serif;
+  background: #f5f7f6;
+  color: #1d1d1f;
+  line-height: 1.6;
+}
+
+/* Header & Navigation */
+header {
+  background-color: #e6f3ec;
+  padding: 24px 20px;
+  text-align: center;
+  border-bottom: 1px solid #c8e2d4;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3d5a4a;
+  margin-bottom: 8px;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #3d5a4a;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid #cce3d6;
+}
+
+nav a:hover {
+  background-color: #3d5a4a;
+  color: #ffffff;
+}
+
+/* Main Layout */
+main {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Form Container */
+.form-container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Form Styles */
+form label {
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2d3c34;
+}
+
+form input,
+form select,
+form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fefefe;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border-color: #3d5a4a;
+  background-color: #f0f9f4;
+}
+
+/* Button */
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #3d5a4a;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #2c4535;
+}
+
+/* Card for Sightings */
+.sighting {
+  background: #ffffff;
+  border: 1px solid #c8e2d4;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.sighting img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+}
+
+/* Auth Container */
+.auth-container {
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  nav {
+    flex-direction: column;
+    align-items: center;
   }
-  
-  header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  nav a {
-    color: white;
-    margin: 0 10px;
-    text-decoration: none;
-  }
-  
-  main {
-    padding: 20px;
-  }
-  
-  form label {
-    display: block;
-    margin-top: 10px;
-  }
-  
-  form input, form select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-  }
-  
+
   button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
+    width: 100%;
   }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-
-/* Wrapper to hold both the background and content */
-.background-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100vh; /* Full viewport height */
-}
-
-/* Full-screen background image without blur */
-.background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('image/img3.jpg'); /* Replace with your image URL */
-    background-size: cover;
-    background-position: center;
-    z-index: -1; /* Put it behind the content */
-}
-
-/* Apply the blur effect to a separate element */
-.background-wrapper::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: inherit; /* Inherit the background image */
-    filter: blur(8px); /* Apply blur effect */
-    z-index: 0; /* Make sure the blur stays behind the content */
-}
-
-/* Overlay content */
-.content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white; /* Text color */
-    z-index: 1; /* Make sure the content is above the background */
-}
-
-/* Add a semi-transparent dark overlay behind the text to enhance readability */
-.background-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Dark transparent overlay */
-    z-index: 0; /* This makes sure it's below the text but above the blurred image */
-}
-
-/* Styling the text */
-h1 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-}
-
-p {
-    font-size: 1.5rem;
-    max-width: 80%;
-    margin: 0 auto;
 }

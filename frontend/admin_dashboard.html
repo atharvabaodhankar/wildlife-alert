@@ -2,205 +2,136 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
-    .alert-form {
-      margin-top: 30px;
-      padding: 20px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-      border-radius: 8px;
-    }
-    .alert-form input,
-    .alert-form select,
-    .alert-form button {
-      margin: 8px 0;
-      padding: 8px;
-      width: 100%;
-    }
-    .alert-form label {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    #map {
-      height: 300px;
-      margin: 20px 0;
-      border: 2px solid #ccc;
-    }
-  </style>
-
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
-
   <header>
     <h1>Admin Dashboard</h1>
     <nav>
       <a href="index.html">Home</a>
-      <a href="logout.html">Logout</a>
+      <a href="view_animals.html">View Animals</a>
+      <a href="view_sightings.html">View Sightings</a>
+      <a href="#" onclick="logout()">Logout</a>
     </nav>
   </header>
 
   <main>
-    <section>
-      <h2>All Sightings</h2>
-      <table id="sightingsTable">
-        <thead>
-          <tr>
-            <th>Animal</th>
-            <th>Location</th>
-            <th>Date</th>
-            <th>User</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <section class="alert-form">
-      <h2>Send Real-Time Wildlife Alert</h2>
-      <form id="alertForm">
-        <label for="message">Alert Message:</label>
-        <input type="text" id="message" name="message" required>
-
-        <label for="location">Location/Address:</label>
-        <input type="text" id="location" name="location" required>
-
-        <label for="pincode">Pincode:</label>
-        <input type="number" id="pincode" name="pincode" required>
-
-        <label for="severity">Severity:</label>
-        <select id="severity" name="severity" required>
-          <option value="Low">Low</option>
-          <option value="Moderate" selected>Moderate</option>
-          <option value="High">High</option>
-        </select>
-
-        <!-- Hidden fields to capture coordinates -->
-        <input type="hidden" id="latitude" name="latitude" />
-        <input type="hidden" id="longitude" name="longitude" />
-
-        <button type="submit">Send Alert</button>
-      </form>
-
-      <h3>Pick Location on Map</h3>
-      <div id="map"></div>
+    <section id="dashboardContainer" class="form-container">
+      <p>Loading admin data...</p>
     </section>
   </main>
 
   <script>
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('userToken');
+    const container = document.getElementById('dashboardContainer');
 
-    // Load all sightings
-    fetch('http://localhost:5000/api/admin/all-sightings', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => res.json())
-    .then(data => {
-      const tbody = document.querySelector("#sightingsTable tbody");
-      data.forEach(s => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${s.animal}</td>
-          <td>${s.location}</td>
-          <td>${new Date(s.date).toLocaleDateString()}</td>
-          <td>${s.user.name}</td>
-          <td>
-            <button onclick="deleteSighting('${s._id}')">Delete</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    });
+    function logout() {
+      localStorage.removeItem('userToken');
+      alert("You have been logged out.");
+      window.location.href = 'login_signup.html';
+    }
 
-    function deleteSighting(id) {
-      if (confirm("Are you sure you want to delete this sighting?")) {
-        fetch(`http://localhost:5000/api/admin/sighting/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(res => res.json())
-        .then(() => location.reload());
+    function isTokenExpired(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp < now;
+      } catch (e) {
+        return true;
       }
     }
 
-    // Handle alert form submission
-    document.getElementById("alertForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const payload = Object.fromEntries(formData.entries());
+    function isAdminToken(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.role === 'admin';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!token || isTokenExpired(token) || !isAdminToken(token)) {
+        container.innerHTML = '<p style="color:red;">Access denied. Admin login required.</p>';
+        logout();
+        return;
+      }
 
       try {
-        const res = await fetch("http://localhost:5000/api/alerts", {
-          method: "POST",
+        const res = await fetch('http://localhost:5000/api/admin/all-sightings', {
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
+            'Authorization': `Bearer ${token}`
+          }
         });
 
-        const result = await res.json();
-        if (result.success) {
-          alert("Alert sent successfully!");
-          e.target.reset();
-          if (marker) {
-            map.removeLayer(marker);
-            marker = null;
-          }
-        } else {
-          alert("Failed to send alert.");
+        if (!res.ok) {
+          throw new Error("Failed to fetch admin data.");
         }
-      } catch (err) {
-        alert("Error sending alert.");
-        console.error(err);
+
+        const sightings = await res.json();
+        container.innerHTML = '';
+
+        if (!Array.isArray(sightings) || sightings.length === 0) {
+          container.innerHTML = '<p>No sightings to manage.</p>';
+          return;
+        }
+
+        sightings.forEach(sighting => {
+          const div = document.createElement('div');
+          div.className = 'sighting';
+          div.innerHTML = `
+            <h3>${sighting.animal}</h3>
+            <p><strong>Location:</strong> ${sighting.location}</p>
+            <p><strong>Date:</strong> ${new Date(sighting.date).toLocaleDateString()}</p>
+            <p><strong>Reported By:</strong> ${sighting.user?.name || 'Unknown'}</p>
+            <p><strong>Status:</strong> ${sighting.status}</p>
+            <button onclick="updateStatus('${sighting._id}', 'approved')">Approve</button>
+            <button onclick="updateStatus('${sighting._id}', 'rejected')">Reject</button>
+            <button onclick="deleteSighting('${sighting._id}')">Delete</button>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        container.innerHTML = '<p style="color:red;">Failed to load data. Please try again later.</p>';
       }
     });
 
-    // Initialize Leaflet map
-    const map = L.map('map').setView([20.5937, 78.9629], 5); // India center
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    let marker = null;
-
-    // Reverse geocoding using Nominatim
-    async function reverseGeocode(lat, lon) {
-      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+    async function updateStatus(id, status) {
       try {
-        const res = await fetch(url);
-        const data = await res.json();
-        document.getElementById("location").value = data.display_name || "";
-        document.getElementById("pincode").value = data.address.postcode || "";
+        const res = await fetch(`http://localhost:5000/api/admin/sighting/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status })
+        });
+
+        if (!res.ok) throw new Error('Status update failed');
+        location.reload();
       } catch (err) {
-        console.error("Geocoding error:", err);
+        alert("Failed to update sighting.");
       }
     }
 
-    // Map click to get coordinates and reverse geocode
-    map.on("click", (e) => {
-      const { lat, lng } = e.latlng;
+    async function deleteSighting(id) {
+      try {
+        const res = await fetch(`http://localhost:5000/api/admin/sighting/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
-      // Set marker
-      if (marker) {
-        marker.setLatLng([lat, lng]);
-      } else {
-        marker = L.marker([lat, lng]).addTo(map);
+        if (!res.ok) throw new Error('Delete failed');
+        location.reload();
+      } catch (err) {
+        alert("Failed to delete sighting.");
       }
-
-      // Update hidden inputs
-      document.getElementById("latitude").value = lat;
-      document.getElementById("longitude").value = lng;
-
-      reverseGeocode(lat, lng);
-    });
+    }
   </script>
 </body>
 </html>

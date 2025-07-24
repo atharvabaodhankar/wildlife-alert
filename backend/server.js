@@ -21,7 +21,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
-// ✅ Attach Socket.IO to the app
+// ✅ Attach Socket.IO to app
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 });
@@ -35,14 +35,25 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log("MongoDB connected ✅"))
 .catch((err) => console.error("MongoDB connection error:", err));
 
-// ✅ Routes
+// ✅ Route Imports
 const alertRoutes = require("./routes/alerts");
-const authRoutes = require("./routes/auth");
-const sightingRoutes = require("./routes/sightings"); // ✅ Add this
+const authRoutes = require("./routes/auth");           // includes /signup, /login, /adminSignup
+const sightingRoutes = require("./routes/sightings");
+const adminRoutes = require("./routes/admin");         // admin dashboard, status update, etc.
+const adminAuthRoutes = require("./routes/adminAuth");
 
+
+// ✅ Route Mounting
 app.use("/api/alerts", alertRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/sightings", sightingRoutes); // ✅ Register sightings route
+app.use("/api/auth", authRoutes);                      // ✅ this contains /signup and /adminSignup
+app.use("/api/sightings", sightingRoutes);
+app.use("/api/admin", adminRoutes);                    // ✅ only admin management routes
+app.use("/api/admin", adminAuthRoutes);
+
+
+// ❌ REMOVE this duplicate (not needed):
+// app.use("/api/admin", adminAuthRoutes);
+// app.use('/api/admin', require('./routes/adminAuth'));
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;

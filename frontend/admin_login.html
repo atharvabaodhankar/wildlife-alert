@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #294B29;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      margin: 0 10px;
+      padding: 8px 14px;
+      background-color: transparent;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .auth-container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 30px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #294B29;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1f3e1f;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Login</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="admin_dashboard.html">Dashboard</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="auth-container">
+      <form id="adminLoginForm">
+        <h2>Welcome Admin</h2>
+        <input type="email" id="adminEmail" placeholder="Admin Email" required />
+        <input type="password" id="adminPassword" placeholder="Password" required />
+        <button type="submit">Log In</button>
+        <p id="errorMessage" class="error-message"></p>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errorMsg = document.getElementById('errorMessage');
+
+      try {
+        const res = await fetch('http://localhost:5000/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Invalid response format");
+        }
+
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          const decoded = JSON.parse(atob(data.token.split('.')[1]));
+
+          if (decoded.role !== 'admin') {
+            errorMsg.textContent = "Access denied. This account is not an admin.";
+            return;
+          }
+
+          localStorage.setItem('userToken', data.token);
+          alert(`Welcome Admin, ${decoded.name}`);
+          window.location.href = 'admin_dashboard.html';
+        } else {
+          errorMsg.textContent = data.message || "Login failed.";
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        errorMsg.textContent = "Login failed. Please check your connection or server.";
+      }
+    });
+  </script>
+</body>
+</html>

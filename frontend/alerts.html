@@ -13,24 +13,55 @@
 
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eaf4ec;
+      margin: 0;
       padding: 20px;
     }
+
+    h1 {
+      text-align: center;
+      color: #264e38;
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    #alerts {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
     .alert {
-      border: 2px solid red;
-      border-radius: 6px;
-      padding: 12px;
-      margin: 20px 0;
-      background-color: #fff5f5;
+      background-color: #ffffff;
+      border-left: 6px solid #2c6e49;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     }
+
     .alert strong {
-      color: darkred;
+      color: #2c6e49;
     }
-    .alert .map {
-      height: 200px;
-      margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+
+    .alert p {
+      margin: 8px 0;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .map {
+      height: 250px;
+      margin-top: 12px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #cfe3d4;
+    }
+
+    @media (max-width: 600px) {
+      .map {
+        height: 200px;
+      }
     }
   </style>
 </head>
@@ -39,16 +70,16 @@
   <div id="alerts"></div>
 
   <script>
-    const socket = io("http://localhost:5000"); // Update this if hosted elsewhere
+    const socket = io("http://localhost:5000");
 
     socket.on("alert", (data) => {
       const alertDiv = document.createElement("div");
       alertDiv.className = "alert";
 
-      const mapId = `map_${Date.now()}`; // Unique map ID for each alert
+      const mapId = `map_${Date.now()}`;
 
       alertDiv.innerHTML = `
-        <p><strong>${data.message}</strong></p>
+        <p><strong>Alert:</strong> ${data.message}</p>
         <p><strong>Location:</strong> ${data.location || "N/A"}, ${data.pincode || "N/A"}</p>
         <p><strong>Severity:</strong> ${data.severity}</p>
         <p><strong>Time:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
@@ -57,14 +88,14 @@
 
       document.getElementById("alerts").prepend(alertDiv);
 
-      // Only show map if coordinates are available
       if (data.latitude && data.longitude) {
         const map = L.map(mapId).setView([data.latitude, data.longitude], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        L.marker([data.latitude, data.longitude]).addTo(map)
+        L.marker([data.latitude, data.longitude])
+          .addTo(map)
           .bindPopup(data.message)
           .openPopup();
       }

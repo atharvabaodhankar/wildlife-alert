@@ -1,5 +1,12 @@
-# .gitignore
+# Node modules
 node_modules/
+
+# Environment files
 .env
-uploads/
+
+# System files
 .DS_Store
+
+# Build/Dist folders (if any)
+build/
+dist/

@@ -5,109 +5,99 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Add Animal</title>
   <link rel="stylesheet" href="styles.css" />
-  <style>
-    main {
-      padding: 20px;
-      margin-top: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .form-container {
-      width: 100%;
-      max-width: 600px;
-      background: #fff;
-      padding: 30px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-    }
-
-    form label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    form input,
-    form select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-
-    button {
-      padding: 8px 14px;
-      font-size: 0.9rem;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    @media (max-width: 600px) {
-      main {
-        padding: 10px;
-      }
-
-      .form-container {
-        padding: 20px;
-      }
-    }
-  </style>
 </head>
 <body>
   <header>
-    <h1>Add Animal</h1>
+    <h1>Add New Animal</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="report_sightings.html">Report Sighting</a>
       <a href="view_animals.html">View Animals</a>
       <a href="view_sightings.html">View Sightings</a>
+      <a href="login_signup.html">Login / Signup</a>
+      <a href="#" onclick="logout()">Logout</a>
     </nav>
   </header>
 
   <main>
-    <div class="form-container">
-      <form id="animalForm">
-        <label for="name">Animal Name:</label>
-        <input type="text" id="name" required />
+    <section class="form-container">
+      <form id="addAnimalForm">
+        <label for="animalName">Animal Name:</label>
+        <input type="text" id="animalName" name="animalName" required>
 
-        <label for="status">Endangered Status:</label>
-        <select id="status">
-          <option value="endangered">Endangered</option>
-          <option value="non-endangered">Non-Endangered</option>
-        </select>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+
+        <label for="habitat">Habitat:</label>
+        <input type="text" id="habitat" name="habitat" required>
 
         <button type="submit">Add Animal</button>
       </form>
-    </div>
+      <p id="message"></p>
+    </section>
   </main>
 
   <script>
-    document.getElementById('animalForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      
-      const name = document.getElementById('name').value.trim();
-      const status = document.getElementById('status').value;
+    function logout() {
+      localStorage.removeItem('token');
+      alert("You have been logged out.");
+      window.location.href = 'login_signup.html';
+    }
 
-      const animals = JSON.parse(localStorage.getItem('animals')) || [];
+    function isTokenExpired(token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp < now;
+      } catch (e) {
+        return true;
+      }
+    }
 
-      animals.push({ name, status });
-      localStorage.setItem('animals', JSON.stringify(animals));
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      const message = document.getElementById('message');
 
-      event.target.reset();
-      alert("Animal added successfully!");
+      if (!token || isTokenExpired(token)) {
+        message.style.color = 'red';
+        message.textContent = 'Please log in to access this page.';
+        logout();
+        return;
+      }
+
+      const form = document.getElementById('addAnimalForm');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const animalName = document.getElementById('animalName').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const habitat = document.getElementById('habitat').value.trim();
+
+        try {
+          const res = await fetch('http://localhost:5000/api/animals', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ name: animalName, description, habitat })
+          });
+
+          const data = await res.json();
+          if (res.ok) {
+            message.style.color = 'green';
+            message.textContent = 'Animal added successfully!';
+            form.reset();
+          } else {
+            message.style.color = 'red';
+            message.textContent = data.message || 'Failed to add animal.';
+          }
+        } catch (error) {
+          console.error('Error adding animal:', error);
+          message.style.color = 'red';
+          message.textContent = 'Server error. Please try again.';
+        }
+      });
     });
   </script>
 </body>

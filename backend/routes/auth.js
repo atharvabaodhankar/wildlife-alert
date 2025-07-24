@@ -4,7 +4,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// SIGNUP
+// ✅ USER SIGNUP
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -18,7 +18,7 @@ router.post("/signup", async (req, res) => {
     // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ name, email, password: hashedPassword });
+    const user = new User({ name, email, password: hashedPassword, role: "user" });
     await user.save();
 
     res.status(201).json({ success: true, message: "User registered successfully" });
@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// LOGIN
+// ✅ USER LOGIN
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -38,7 +38,6 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
-    // Compare hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: "Invalid email or password" });
@@ -54,6 +53,33 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     console.error("Login Error:", err);
     res.status(500).json({ success: false, message: "Login failed" });
+  }
+});
+
+// ✅ TEMPORARY ADMIN SIGNUP (USE ONCE THEN DELETE OR PROTECT)
+router.post("/adminSignup", async (req, res) => {
+  const { name, email, password } = req.body;
+
+  try {
+    const existingAdmin = await User.findOne({ email });
+    if (existingAdmin) {
+      return res.status(400).json({ success: false, message: "Admin already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const admin = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: "admin"
+    });
+
+    await admin.save();
+    res.status(201).json({ success: true, message: "Admin account created successfully" });
+  } catch (err) {
+    console.error("Admin Signup Error:", err);
+    res.status(500).json({ success: false, message: "Admin signup failed" });
   }
 });
 
