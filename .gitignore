@@ -1,12 +1,12 @@
-# Node modules
-node_modules/
+# Ignore all node_modules folders anywhere
+**/node_modules/
 
-# Environment files
-.env
+# Ignore all .env files
+**/.env
 
 # System files
 .DS_Store
 
-# Build/Dist folders (if any)
+# Build/Dist folders
 build/
 dist/
