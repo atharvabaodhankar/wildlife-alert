@@ -1,32 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const Alert = require("../models/Alert");
 
-router.post("/", async (req, res) => {
-  const io = req.app.get("io");
+// POST /api/alerts - Admin generates a real-time alert
+router.post("/", (req, res) => {
+  const io = req.app.get("io"); // Get Socket.IO instance
   const { message, location, pincode, severity, latitude, longitude } = req.body;
 
-  try {
-    // Create and save new alert
-    const alert = new Alert({
-      message,
-      location,
-      pincode,
-      severity,
-      latitude,
-      longitude,
-    });
+  const alertData = {
+    message,
+    location,
+    pincode,
+    severity,
+    latitude,
+    longitude,
+    timestamp: new Date(),
+  };
 
-    await alert.save();
+  // Emit alert to all connected clients
+  io.emit("alert", alertData);
 
-    // Emit real-time alert to all connected users
-    io.emit("alert", alert);
-
-    res.status(200).json({ success: true, alert });
-  } catch (err) {
-    console.error("Alert Error:", err);
-    res.status(500).json({ error: "Failed to send alert" });
-  }
+  res.status(200).json({ success: true, alert: alertData });
 });
 
 module.exports = router;

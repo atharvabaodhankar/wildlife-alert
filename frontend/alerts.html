@@ -70,9 +70,15 @@
   <div id="alerts"></div>
 
   <script>
-    const socket = io("http://localhost:5000");
+    const socket = io("http://localhost:5000"); // Use backend URL if deployed
+
+    socket.on("connect", () => {
+      console.log("✅ Socket connected");
+    });
 
     socket.on("alert", (data) => {
+      console.log("📣 New Alert:", data);
+
       const alertDiv = document.createElement("div");
       alertDiv.className = "alert";
 
