@@ -2,110 +2,640 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Live Wildlife Alerts</title>
-
-  <!-- Socket.IO -->
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
-  <!-- Leaflet CSS & JS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wildlife Alerts - Real-time Monitoring</title>
+  <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #eaf4ec;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4rem 2rem;
       text-align: center;
-      color: #264e38;
-      font-size: 2rem;
-      margin-bottom: 30px;
+      margin-bottom: 3rem;
+      border-radius: 1rem;
+      position: relative;
+      overflow: hidden;
     }
 
-    #alerts {
-      max-width: 900px;
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="90" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
       margin: 0 auto;
     }
 
-    .alert {
-      background-color: #ffffff;
-      border-left: 6px solid #2c6e49;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
     }
 
-    .alert strong {
-      color: #2c6e49;
+    .stat-card {
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
     }
 
-    .alert p {
-      margin: 8px 0;
-      font-size: 0.95rem;
-      color: #333;
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
     }
 
-    .map {
-      height: 250px;
-      margin-top: 12px;
-      border-radius: 8px;
+    .stat-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      background: var(--gradient-green);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .alerts-container {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .alert-card {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      position: relative;
       overflow: hidden;
-      border: 1px solid #cfe3d4;
+      animation: slideInUp 0.5s ease;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    @media (max-width: 600px) {
-      .map {
+    .alert-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .alert-card.severity-high {
+      border-left: 6px solid var(--danger);
+    }
+
+    .alert-card.severity-medium {
+      border-left: 6px solid var(--warning);
+    }
+
+    .alert-card.severity-low {
+      border-left: 6px solid var(--success);
+    }
+
+    .alert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1.5rem;
+    }
+
+    .alert-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .alert-time {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .severity-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .severity-high {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+
+    .severity-medium {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+
+    .severity-low {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+
+    .alert-details {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .alert-info p {
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .alert-info i {
+      width: 16px;
+      color: var(--text-secondary);
+    }
+
+    .mini-map {
+      width: 200px;
+      height: 150px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .no-alerts {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-secondary);
+    }
+
+    .no-alerts i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    .connection-status {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .connection-status.connected {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .connection-status.disconnected {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes slideInUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .alert-details {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .mini-map {
+        width: 100%;
         height: 200px;
       }
     }
   </style>
 </head>
 <body>
-  <h1>Live Wildlife Alerts</h1>
-  <div id="alerts"></div>
+  <!-- Navigation -->
+  <header>
+    <nav class="navbar">
+      <h1><i class="fas fa-paw"></i> Wildlife Tracker</h1>
+      <div class="nav-links">
+        <a href="index.html"><i class="fas fa-home"></i> Home</a>
+        <a href="view_animals.html"><i class="fas fa-binoculars"></i> Animals</a>
+        <a href="report_sightings.html"><i class="fas fa-camera"></i> Report</a>
+        <a href="alerts.html" class="active"><i class="fas fa-exclamation-triangle"></i> Alerts</a>
+        <a href="login_signup.html"><i class="fas fa-user"></i> Login</a>
+      </div>
+    </nav>
+  </header>
 
+  <!-- Connection Status -->
+  <div id="connectionStatus" class="connection-status disconnected">
+    <i class="fas fa-circle pulse"></i>
+    <span>Connecting...</span>
+  </div>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <i class="fas fa-broadcast-tower"></i>
+          Live Wildlife Alerts
+        </h1>
+        <p class="hero-subtitle">
+          Real-time monitoring and emergency notifications for wildlife activity in your area
+        </p>
+      </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="stat-number" id="totalAlerts">0</div>
+        <div class="stat-label">Total Alerts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-number" id="recentAlerts">0</div>
+        <div class="stat-label">Last 24 Hours</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div class="stat-number" id="highSeverity">0</div>
+        <div class="stat-label">High Severity</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-number" id="connectedUsers">1</div>
+        <div class="stat-label">Connected Users</div>
+      </div>
+    </section>
+
+    <!-- Alerts Container -->
+    <section class="alerts-container" id="alertsContainer">
+      <div class="no-alerts" id="noAlerts">
+        <i class="fas fa-shield-alt"></i>
+        <h3>No Active Alerts</h3>
+        <p>All clear! No wildlife alerts in your area at the moment.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Alert Detail Modal -->
+  <div id="alertModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Alert Details</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div id="modalBody">
+        <!-- Alert details will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  
   <script>
-    const socket = io("http://localhost:5000"); // Use backend URL if deployed
+    let socket;
+    let alerts = [];
+    let stats = {
+      total: 0,
+      recent: 0,
+      highSeverity: 0,
+      connected: 1
+    };
 
-    socket.on("connect", () => {
-      console.log("✅ Socket connected");
-    });
+    // Initialize socket connection
+    function initSocket() {
+      socket = io("http://localhost:5000");
+      
+      socket.on("connect", () => {
+        console.log("✅ Socket connected");
+        updateConnectionStatus(true);
+      });
 
-    socket.on("alert", (data) => {
-      console.log("📣 New Alert:", data);
+      socket.on("disconnect", () => {
+        console.log("❌ Socket disconnected");
+        updateConnectionStatus(false);
+      });
 
-      const alertDiv = document.createElement("div");
-      alertDiv.className = "alert";
+      socket.on("alert", (data) => {
+        console.log("📣 New Alert:", data);
+        addAlert(data);
+        showNotification(data);
+      });
+    }
 
-      const mapId = `map_${Date.now()}`;
-
-      alertDiv.innerHTML = `
-        <p><strong>Alert:</strong> ${data.message}</p>
-        <p><strong>Location:</strong> ${data.location || "N/A"}, ${data.pincode || "N/A"}</p>
-        <p><strong>Severity:</strong> ${data.severity}</p>
-        <p><strong>Time:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
-        <div id="${mapId}" class="map"></div>
-      `;
-
-      document.getElementById("alerts").prepend(alertDiv);
-
-      if (data.latitude && data.longitude) {
-        const map = L.map(mapId).setView([data.latitude, data.longitude], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-
-        L.marker([data.latitude, data.longitude])
-          .addTo(map)
-          .bindPopup(data.message)
-          .openPopup();
+    // Update connection status
+    function updateConnectionStatus(connected) {
+      const status = document.getElementById('connectionStatus');
+      if (connected) {
+        status.className = 'connection-status connected';
+        status.innerHTML = '<i class="fas fa-circle"></i><span>Connected</span>';
+      } else {
+        status.className = 'connection-status disconnected';
+        status.innerHTML = '<i class="fas fa-circle pulse"></i><span>Reconnecting...</span>';
       }
+    }
+
+    // Add new alert
+    function addAlert(alertData) {
+      alerts.unshift(alertData);
+      updateStats();
+      renderAlerts();
+    }
+
+    // Update statistics
+    function updateStats() {
+      const now = new Date();
+      const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      
+      stats.total = alerts.length;
+      stats.recent = alerts.filter(alert => new Date(alert.timestamp) > last24h).length;
+      stats.highSeverity = alerts.filter(alert => 
+        alert.severity && alert.severity.toLowerCase() === 'high'
+      ).length;
+
+      document.getElementById('totalAlerts').textContent = stats.total;
+      document.getElementById('recentAlerts').textContent = stats.recent;
+      document.getElementById('highSeverity').textContent = stats.highSeverity;
+    }
+
+    // Render alerts
+    function renderAlerts() {
+      const container = document.getElementById('alertsContainer');
+      const noAlerts = document.getElementById('noAlerts');
+      
+      if (alerts.length === 0) {
+        noAlerts.style.display = 'block';
+        return;
+      }
+      
+      noAlerts.style.display = 'none';
+      
+      // Clear existing alerts except no-alerts div
+      const existingAlerts = container.querySelectorAll('.alert-card');
+      existingAlerts.forEach(alert => alert.remove());
+      
+      alerts.forEach((alert, index) => {
+        const alertCard = createAlertCard(alert, index);
+        container.appendChild(alertCard);
+      });
+    }
+
+    // Create alert card
+    function createAlertCard(alert, index) {
+      const card = document.createElement('div');
+      const severity = (alert.severity || 'medium').toLowerCase();
+      const mapId = `map_${Date.now()}_${index}`;
+      
+      card.className = `alert-card severity-${severity}`;
+      card.onclick = () => openAlertModal(alert);
+      
+      card.innerHTML = `
+        <div class="alert-header">
+          <div>
+            <h3 class="alert-title">${alert.message}</h3>
+            <div class="alert-time">
+              <i class="fas fa-clock"></i>
+              ${new Date(alert.timestamp).toLocaleString()}
+            </div>
+          </div>
+          <span class="severity-badge severity-${severity}">
+            ${severity} Priority
+          </span>
+        </div>
+        <div class="alert-details">
+          <div class="alert-info">
+            <p><i class="fas fa-map-marker-alt"></i> ${alert.location || 'Unknown Location'}</p>
+            <p><i class="fas fa-mail-bulk"></i> ${alert.pincode || 'N/A'}</p>
+            <p><i class="fas fa-exclamation-circle"></i> Severity: ${alert.severity || 'Medium'}</p>
+          </div>
+          ${alert.latitude && alert.longitude ? `<div id="${mapId}" class="mini-map"></div>` : ''}
+        </div>
+      `;
+      
+      // Initialize mini map after DOM insertion
+      setTimeout(() => {
+        if (alert.latitude && alert.longitude) {
+          initMiniMap(mapId, alert);
+        }
+      }, 100);
+      
+      return card;
+    }
+
+    // Initialize mini map
+    function initMiniMap(mapId, alert) {
+      try {
+        const map = L.map(mapId, {
+          zoomControl: false,
+          attributionControl: false
+        }).setView([alert.latitude, alert.longitude], 12);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
+        const marker = L.marker([alert.latitude, alert.longitude])
+          .addTo(map)
+          .bindPopup(alert.message);
+      } catch (error) {
+        console.error('Error initializing mini map:', error);
+      }
+    }
+
+    // Open alert modal
+    function openAlertModal(alert) {
+      const modal = document.getElementById('alertModal');
+      const modalBody = document.getElementById('modalBody');
+      const modalTitle = document.getElementById('modalTitle');
+      
+      modalTitle.textContent = alert.message;
+      
+      modalBody.innerHTML = `
+        <div class="alert-details">
+          <div class="alert-info">
+            <p><strong><i class="fas fa-map-marker-alt"></i> Location:</strong> ${alert.location || 'Unknown'}</p>
+            <p><strong><i class="fas fa-mail-bulk"></i> Pincode:</strong> ${alert.pincode || 'N/A'}</p>
+            <p><strong><i class="fas fa-exclamation-circle"></i> Severity:</strong> ${alert.severity || 'Medium'}</p>
+            <p><strong><i class="fas fa-clock"></i> Time:</strong> ${new Date(alert.timestamp).toLocaleString()}</p>
+            ${alert.latitude && alert.longitude ? `
+              <p><strong><i class="fas fa-crosshairs"></i> Coordinates:</strong> ${alert.latitude.toFixed(6)}, ${alert.longitude.toFixed(6)}</p>
+            ` : ''}
+          </div>
+        </div>
+        ${alert.latitude && alert.longitude ? `
+          <div id="modalMap" style="height: 300px; margin-top: 1rem; border-radius: 0.5rem; overflow: hidden;"></div>
+        ` : ''}
+      `;
+      
+      modal.classList.add('show');
+      
+      // Initialize modal map
+      if (alert.latitude && alert.longitude) {
+        setTimeout(() => {
+          const modalMap = L.map('modalMap').setView([alert.latitude, alert.longitude], 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(modalMap);
+          
+          L.marker([alert.latitude, alert.longitude])
+            .addTo(modalMap)
+            .bindPopup(alert.message)
+            .openPopup();
+        }, 100);
+      }
+    }
+
+    // Close modal
+    function closeModal() {
+      const modal = document.getElementById('alertModal');
+      modal.classList.remove('show');
+    }
+
+    // Show notification
+    function showNotification(alert) {
+      // Create toast notification
+      const toast = document.createElement('div');
+      toast.className = `toast ${(alert.severity || 'medium').toLowerCase() === 'high' ? 'error' : 'warning'}`;
+      toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div>
+            <strong>New Wildlife Alert!</strong><br>
+            <small>${alert.message} - ${alert.location}</small>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(toast);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        toast.style.animation = 'toastSlideOut 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+      
+      // Play notification sound (optional)
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Wildlife Alert', {
+          body: `${alert.message} - ${alert.location}`,
+          icon: '/favicon.ico'
+        });
+      }
+    }
+
+    // Request notification permission
+    function requestNotificationPermission() {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => {
+      initSocket();
+      requestNotificationPermission();
+      updateStats();
+      
+      // Close modal when clicking outside
+      document.getElementById('alertModal').addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+          closeModal();
+        }
+      });
     });
+
+    // Add CSS animation for toast slide out
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes toastSlideOut {
+        from { transform: translateX(0); }
+        to { transform: translateX(100%); }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>

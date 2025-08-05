@@ -3,87 +3,794 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Report Sighting</title>
+  <title>Report Wildlife Sighting - Wildlife Tracker</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <style>
+    .report-hero {
+      background: var(--gradient);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      border-radius: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .report-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="camera" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="2" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23camera)"/></svg>');
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .report-container {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .form-section {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      height: fit-content;
+    }
+
+    .form-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .form-description {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group-full {
+      grid-column: 1 / -1;
+    }
+
+    .image-upload {
+      position: relative;
+      border: 2px dashed var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: var(--bg-primary);
+    }
+
+    .image-upload:hover {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .image-upload.dragover {
+      border-color: var(--accent);
+      background: rgba(16, 185, 129, 0.1);
+      transform: scale(1.02);
+    }
+
+    .image-upload input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-content {
+      pointer-events: none;
+    }
+
+    .upload-icon {
+      font-size: 3rem;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .image-preview {
+      display: none;
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    .preview-image {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+    }
+
+    .remove-image {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .remove-image:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem 2rem;
+      background: var(--gradient-green);
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .submit-btn.loading .spinner {
+      display: block;
+    }
+
+    .submit-btn.loading .btn-text {
+      display: none;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .tips-card {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .tips-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tip-item {
+      display: flex;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-primary);
+      border-radius: 0.5rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    .tip-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .tip-icon {
+      color: var(--accent);
+      font-size: 1.25rem;
+      margin-top: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .tip-content h4 {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .tip-content p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .recent-sightings {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .recent-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sighting-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--bg-primary);
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .sighting-item:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .sighting-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .sighting-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gradient-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .sighting-info h4 {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+    }
+
+    .sighting-info p {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 1024px) {
+      .report-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      
+      .sidebar {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-section {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Navigation -->
   <header>
-    <h1>Report Wildlife Sighting</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="add_animal.html">Add Animal</a>
-      <a href="view_animals.html">View Animals</a>
-      <a href="view_sightings.html">View Sightings</a>
-      <a href="login_signup.html">Login / Signup</a>
-      <a href="#" onclick="logout()">Logout</a>
+    <nav class="navbar">
+      <h1><i class="fas fa-paw"></i> Wildlife Tracker</h1>
+      <div class="nav-links">
+        <a href="index.html"><i class="fas fa-home"></i> Home</a>
+        <a href="add_animal.html"><i class="fas fa-plus"></i> Add Animal</a>
+        <a href="report_sightings.html" class="active"><i class="fas fa-camera"></i> Report</a>
+        <a href="view_animals.html"><i class="fas fa-binoculars"></i> Animals</a>
+        <a href="view_sightings.html"><i class="fas fa-eye"></i> Sightings</a>
+        <a href="alerts.html"><i class="fas fa-exclamation-triangle"></i> Alerts</a>
+        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
     </nav>
   </header>
 
   <main>
-    <section class="form-container">
-      <form id="sightingForm" enctype="multipart/form-data">
-        <label for="animal">Animal:</label>
-        <input type="text" id="animal" name="animal" required>
-
-        <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required>
-
-        <label for="date">Date:</label>
-        <input type="date" id="date" name="date" required>
-
-        <label for="image">Upload Image (optional):</label>
-        <input type="file" id="image" name="image" accept="image/*">
-
-        <button type="submit">Submit Sighting</button>
-      </form>
-      <p id="message"></p>
+    <!-- Hero Section -->
+    <section class="report-hero">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <i class="fas fa-camera"></i>
+          Report Wildlife Sighting
+        </h1>
+        <p class="hero-subtitle">
+          Help us track and protect wildlife by reporting your sightings. Every observation contributes to conservation efforts.
+        </p>
+      </div>
     </section>
+
+    <!-- Main Content -->
+    <div class="report-container">
+      <!-- Form Section -->
+      <section class="form-section">
+        <h2 class="form-title">
+          <i class="fas fa-clipboard-list"></i>
+          Sighting Details
+        </h2>
+        <p class="form-description">
+          Please provide as much detail as possible about your wildlife sighting. Accurate information helps researchers and conservationists better understand animal behavior and habitat usage.
+        </p>
+
+        <div id="messageContainer"></div>
+
+        <form id="sightingForm" enctype="multipart/form-data">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="animal">Animal Species</label>
+              <input type="text" id="animal" name="animal" class="form-control" 
+                     placeholder="e.g., Bengal Tiger, Asian Elephant" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="date">Date of Sighting</label>
+              <input type="date" id="date" name="date" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-group form-group-full">
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location" class="form-control" 
+                   placeholder="e.g., Bandhavgarh National Park, Madhya Pradesh" required>
+          </div>
+
+          <div class="form-group form-group-full">
+            <label for="description">Description (Optional)</label>
+            <textarea id="description" name="description" class="form-control" rows="3" 
+                      placeholder="Describe the animal's behavior, group size, or any other relevant details..."></textarea>
+          </div>
+
+          <div class="form-group form-group-full">
+            <label>Upload Photo (Optional)</label>
+            <div class="image-upload" id="imageUpload">
+              <input type="file" id="image" name="image" accept="image/*">
+              <div class="upload-content">
+                <div class="upload-icon">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Click to upload or drag and drop</div>
+                <div class="upload-hint">PNG, JPG, GIF up to 10MB</div>
+              </div>
+            </div>
+            <div class="image-preview" id="imagePreview">
+              <img id="previewImage" class="preview-image" alt="Preview">
+              <button type="button" class="remove-image" onclick="removeImage()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <div class="spinner"></div>
+            <span class="btn-text">
+              <i class="fas fa-paper-plane"></i>
+              Submit Sighting Report
+            </span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Tips Card -->
+        <div class="tips-card">
+          <h3 class="tips-title">
+            <i class="fas fa-lightbulb"></i>
+            Reporting Tips
+          </h3>
+          
+          <div class="tip-item">
+            <div class="tip-icon">
+              <i class="fas fa-camera"></i>
+            </div>
+            <div class="tip-content">
+              <h4>Take Clear Photos</h4>
+              <p>Capture clear, well-lit photos from multiple angles if possible. Photos help with species identification.</p>
+            </div>
+          </div>
+          
+          <div class="tip-item">
+            <div class="tip-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="tip-content">
+              <h4>Be Specific with Location</h4>
+              <p>Include landmarks, GPS coordinates, or detailed location descriptions to help researchers.</p>
+            </div>
+          </div>
+          
+          <div class="tip-item">
+            <div class="tip-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="tip-content">
+              <h4>Report Quickly</h4>
+              <p>Submit your sighting as soon as possible while details are fresh in your memory.</p>
+            </div>
+          </div>
+          
+          <div class="tip-item">
+            <div class="tip-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="tip-content">
+              <h4>Safety First</h4>
+              <p>Never approach wild animals. Observe from a safe distance and respect their natural behavior.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Sightings -->
+        <div class="recent-sightings">
+          <h3 class="recent-title">
+            <i class="fas fa-history"></i>
+            Recent Community Sightings
+          </h3>
+          
+          <div id="recentSightings">
+            <div class="sighting-item">
+              <div class="sighting-avatar">BT</div>
+              <div class="sighting-info">
+                <h4>Bengal Tiger</h4>
+                <p>Reported 2 hours ago in Ranthambore</p>
+              </div>
+            </div>
+            
+            <div class="sighting-item">
+              <div class="sighting-avatar">AE</div>
+              <div class="sighting-info">
+                <h4>Asian Elephant</h4>
+                <p>Reported 5 hours ago in Kaziranga</p>
+              </div>
+            </div>
+            
+            <div class="sighting-item">
+              <div class="sighting-avatar">SL</div>
+              <div class="sighting-info">
+                <h4>Snow Leopard</h4>
+                <p>Reported 1 day ago in Ladakh</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
   </main>
 
+  <!-- Alert Modal -->
+  <div id="alertModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+          Wildlife Alert
+        </h2>
+        <button class="modal-close" onclick="closeAlertModal()">&times;</button>
+      </div>
+      <div id="alertModalBody">
+        <!-- Alert content will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  
   <script>
+    let socket;
+    const token = localStorage.getItem('userToken');
+
+    // Initialize socket connection
+    function initSocket() {
+      socket = io('http://localhost:5000');
+      socket.on('alert', (alert) => {
+        showAlertModal(alert);
+      });
+    }
+
+    // Show message
+    function showMessage(message, type = 'error') {
+      const container = document.getElementById('messageContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      
+      container.innerHTML = '';
+      container.appendChild(alert);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.style.animation = 'slideInDown 0.3s ease reverse';
+        setTimeout(() => alert.remove(), 300);
+      }, 5000);
+    }
+
+    // Set loading state
+    function setLoading(isLoading) {
+      const button = document.getElementById('submitBtn');
+      if (isLoading) {
+        button.classList.add('loading');
+        button.disabled = true;
+      } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+      }
+    }
+
+    // Setup image upload
+    function setupImageUpload() {
+      const uploadArea = document.getElementById('imageUpload');
+      const fileInput = document.getElementById('image');
+      const preview = document.getElementById('imagePreview');
+      const previewImage = document.getElementById('previewImage');
+
+      // Handle drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          fileInput.files = files;
+          handleImagePreview(files[0]);
+        }
+      });
+
+      // Handle file input change
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          handleImagePreview(e.target.files[0]);
+        }
+      });
+    }
+
+    // Handle image preview
+    function handleImagePreview(file) {
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById('previewImage').src = e.target.result;
+          document.getElementById('imagePreview').style.display = 'block';
+          document.getElementById('imageUpload').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Remove image
+    function removeImage() {
+      document.getElementById('image').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+      document.getElementById('imageUpload').style.display = 'block';
+    }
+
+    // Show alert modal
+    function showAlertModal(alert) {
+      const modal = document.getElementById('alertModal');
+      const modalBody = document.getElementById('alertModalBody');
+      
+      const severity = (alert.severity || 'medium').toLowerCase();
+      const severityColor = severity === 'high' ? 'var(--danger)' : 
+                           severity === 'medium' ? 'var(--warning)' : 'var(--success)';
+      
+      modalBody.innerHTML = `
+        <div class="alert alert-${severity === 'high' ? 'danger' : 'warning'}">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <i class="fas fa-map-marker-alt" style="font-size: 1.5rem; color: ${severityColor};"></i>
+            <div>
+              <h3 style="margin: 0; color: var(--text-primary);">${alert.message}</h3>
+              <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
+                <i class="fas fa-clock"></i> ${new Date(alert.timestamp).toLocaleString()}
+              </p>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <strong><i class="fas fa-location-dot"></i> Location:</strong><br>
+              ${alert.location || 'Unknown Location'}
+            </div>
+            <div>
+              <strong><i class="fas fa-exclamation-circle"></i> Severity:</strong><br>
+              <span class="severity-badge severity-${severity}">${alert.severity || 'Medium'}</span>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="alerts.html" class="btn btn-primary">
+              <i class="fas fa-eye"></i> View All Alerts
+            </a>
+            <button class="btn btn-secondary" onclick="closeAlertModal()">
+              <i class="fas fa-times"></i> Dismiss
+            </button>
+          </div>
+        </div>
+      `;
+      
+      modal.classList.add('show');
+    }
+
+    // Close alert modal
+    function closeAlertModal() {
+      document.getElementById('alertModal').classList.remove('show');
+    }
+
+    // Logout function
     function logout() {
-      localStorage.removeItem('token');
-      alert("You have been logged out.");
+      localStorage.removeItem('userToken');
       window.location.href = 'login_signup.html';
     }
 
-    function isTokenExpired(token) {
+    // Check authentication
+    function checkAuth() {
+      if (!token) {
+        showMessage('Please log in to report a sighting.');
+        setTimeout(() => logout(), 2000);
+        return false;
+      }
+
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const now = Math.floor(Date.now() / 1000);
-        return payload.exp < now;
-      } catch (e) {
+        
+        if (payload.exp < now) {
+          showMessage('Your session has expired. Please log in again.');
+          setTimeout(() => logout(), 2000);
+          return false;
+        }
+        
         return true;
+      } catch (e) {
+        showMessage('Invalid session. Please log in again.');
+        setTimeout(() => logout(), 2000);
+        return false;
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const token = localStorage.getItem('token');
-      const message = document.getElementById('message');
-
-      if (!token || isTokenExpired(token)) {
-        message.style.color = 'red';
-        message.textContent = 'Please log in again to report a sighting.';
-        logout();
-        return;
-      }
-
+    // Handle form submission
+    function setupForm() {
       document.getElementById('sightingForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        if (!checkAuth()) return;
 
         const formData = new FormData();
-        formData.append('animal', document.getElementById('animal').value);
-        formData.append('location', document.getElementById('location').value);
+        formData.append('animal', document.getElementById('animal').value.trim());
+        formData.append('location', document.getElementById('location').value.trim());
         formData.append('date', document.getElementById('date').value);
+        
+        const description = document.getElementById('description').value.trim();
+        if (description) {
+          formData.append('description', description);
+        }
 
         const imageInput = document.getElementById('image');
         if (imageInput.files.length > 0) {
           formData.append('image', imageInput.files[0]);
         }
 
+        setLoading(true);
+
         try {
-          const res = await fetch('http://localhost:5000/api/sightings', {
+          const response = await fetch('http://localhost:5000/api/sightings', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`
@@ -91,31 +798,46 @@
             body: formData
           });
 
-          const data = await res.json();
-          if (res.ok) {
-            message.style.color = 'green';
-            message.textContent = 'Sighting submitted successfully!';
+          const data = await response.json();
+          
+          if (response.ok) {
+            showMessage('Sighting submitted successfully! Thank you for contributing to wildlife conservation.', 'success');
             document.getElementById('sightingForm').reset();
+            removeImage();
           } else {
-            message.style.color = 'red';
-            message.textContent = data.error || 'Submission failed';
+            showMessage(data.error || 'Failed to submit sighting. Please try again.');
           }
         } catch (error) {
           console.error('Error submitting sighting:', error);
-          message.style.color = 'red';
-          message.textContent = 'Server error. Try again later.';
+          showMessage('Network error. Please check your connection and try again.');
+        } finally {
+          setLoading(false);
+        }
+      });
+    }
+
+    // Set today's date as default
+    function setDefaultDate() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date').value = today;
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!checkAuth()) return;
+      
+      initSocket();
+      setupImageUpload();
+      setupForm();
+      setDefaultDate();
+      
+      // Close modal when clicking outside
+      document.getElementById('alertModal').addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+          closeAlertModal();
         }
       });
     });
-
-    const socket = io('http://localhost:5000');
-    socket.on('alert', (alert) => {
-      alertUser(alert);
-    });
-
-    function alertUser(alert) {
-      alert(`EMERGENCY ALERT!\n${alert.message}\nLocation: ${alert.location}\nSeverity: ${alert.severity}`);
-    }
   </script>
 </body>
 </html>
