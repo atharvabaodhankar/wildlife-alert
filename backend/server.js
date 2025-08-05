@@ -48,6 +48,7 @@ const authRoutes = require("./routes/auth");           // Signup/Login
 const sightingRoutes = require("./routes/sightings");  // Wildlife sightings
 const adminRoutes = require("./routes/admin");         // Admin dashboard routes
 const adminAuthRoutes = require("./routes/adminAuth"); // Admin login routes
+const animalRoutes = require("./routes/animals");      // Animal species database
 
 // ✅ Route Mounting
 app.use("/api/alerts", alertRoutes);        // Emits alerts via Socket.IO
@@ -55,6 +56,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/sightings", sightingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminAuthRoutes);
+app.use("/api/animals", animalRoutes);      // Animal species CRUD operations
 
 // ✅ Root Check Route (optional)
 app.get("/", (req, res) => {

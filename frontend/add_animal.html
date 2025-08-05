@@ -3,47 +3,434 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Add Animal</title>
+  <title>Add Animal Species - Wildlife Tracker</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <style>
+    .add-animal-hero {
+      background: var(--gradient);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      border-radius: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .add-animal-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="animals" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="2" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23animals)"/></svg>');
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .add-animal-container {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .form-section {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      height: fit-content;
+    }
+
+    .form-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .form-description {
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .textarea-group {
+      position: relative;
+    }
+
+    .char-counter {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem 2rem;
+      background: var(--gradient-green);
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .submit-btn.loading .spinner {
+      display: block;
+    }
+
+    .submit-btn.loading .btn-text {
+      display: none;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .info-card {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .info-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-primary);
+      border-radius: 0.5rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    .info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-icon {
+      color: var(--accent);
+      font-size: 1.25rem;
+      margin-top: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .info-content h4 {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .info-content p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .examples-card {
+      background: var(--bg-secondary);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .example-item {
+      background: var(--bg-primary);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--success);
+    }
+
+    .example-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .example-name {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .example-habitat {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .example-description {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1024px) {
+      .add-animal-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      
+      .sidebar {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .form-section {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Navigation -->
   <header>
-    <h1>Add New Animal</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="report_sightings.html">Report Sighting</a>
-      <a href="view_animals.html">View Animals</a>
-      <a href="view_sightings.html">View Sightings</a>
-      <a href="login_signup.html">Login / Signup</a>
-      <a href="#" onclick="logout()">Logout</a>
+    <nav class="navbar">
+      <h1><i class="fas fa-paw"></i> Wildlife Tracker</h1>
+      <div class="nav-links">
+        <a href="index.html"><i class="fas fa-home"></i> Home</a>
+        <a href="add_animal.html" class="active"><i class="fas fa-plus"></i> Add Animal</a>
+        <a href="report_sightings.html"><i class="fas fa-camera"></i> Report</a>
+        <a href="view_animals.html"><i class="fas fa-binoculars"></i> Animals</a>
+        <a href="view_sightings.html"><i class="fas fa-eye"></i> Sightings</a>
+        <a href="alerts.html"><i class="fas fa-exclamation-triangle"></i> Alerts</a>
+        <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
     </nav>
   </header>
 
   <main>
-    <section class="form-container">
-      <form id="addAnimalForm">
-        <label for="animalName">Animal Name:</label>
-        <input type="text" id="animalName" name="animalName" required>
-
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" rows="4" required></textarea>
-
-        <label for="habitat">Habitat:</label>
-        <input type="text" id="habitat" name="habitat" required>
-
-        <button type="submit">Add Animal</button>
-      </form>
-      <p id="message"></p>
+    <!-- Hero Section -->
+    <section class="add-animal-hero">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <i class="fas fa-plus-circle"></i>
+          Add Animal Species
+        </h1>
+        <p class="hero-subtitle">
+          Contribute to our wildlife database by adding new animal species information
+        </p>
+      </div>
     </section>
+
+    <!-- Main Content -->
+    <div class="add-animal-container">
+      <!-- Form Section -->
+      <section class="form-section">
+        <h2 class="form-title">
+          <i class="fas fa-database"></i>
+          Species Information
+        </h2>
+        <p class="form-description">
+          Add detailed information about an animal species to help build our comprehensive wildlife database. This information will be used by researchers and conservationists.
+        </p>
+
+        <div id="messageContainer"></div>
+
+        <form id="addAnimalForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="animalName">Species Name</label>
+              <input type="text" id="animalName" name="animalName" class="form-control" 
+                     placeholder="e.g., Bengal Tiger, Asian Elephant" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="habitat">Primary Habitat</label>
+              <input type="text" id="habitat" name="habitat" class="form-control" 
+                     placeholder="e.g., Tropical forests, Grasslands, Mountains" required>
+            </div>
+
+            <div class="form-group textarea-group">
+              <label for="description">Species Description</label>
+              <textarea id="description" name="description" class="form-control" rows="6" 
+                        placeholder="Provide detailed information about the species including physical characteristics, behavior, conservation status, and other relevant details..." 
+                        required maxlength="1000"></textarea>
+              <div class="char-counter">
+                <span id="charCount">0</span>/1000
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <div class="spinner"></div>
+            <span class="btn-text">
+              <i class="fas fa-plus"></i>
+              Add Species to Database
+            </span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Guidelines Card -->
+        <div class="info-card">
+          <h3 class="info-title">
+            <i class="fas fa-lightbulb"></i>
+            Guidelines
+          </h3>
+          
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-spell-check"></i>
+            </div>
+            <div class="info-content">
+              <h4>Use Scientific Names</h4>
+              <p>Include both common and scientific names when possible for accuracy.</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="info-content">
+              <h4>Be Detailed</h4>
+              <p>Provide comprehensive information about physical traits, behavior, and habitat preferences.</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="info-content">
+              <h4>Conservation Status</h4>
+              <p>Include conservation status (Endangered, Vulnerable, etc.) if known.</p>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="fas fa-check-double"></i>
+            </div>
+            <div class="info-content">
+              <h4>Verify Information</h4>
+              <p>Ensure all information is accurate and from reliable sources.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Examples Card -->
+        <div class="examples-card">
+          <h3 class="info-title">
+            <i class="fas fa-lightbulb"></i>
+            Examples
+          </h3>
+          
+          <div class="example-item">
+            <div class="example-name">Snow Leopard (Panthera uncia)</div>
+            <div class="example-habitat">High mountain ranges of Central Asia</div>
+            <div class="example-description">Endangered big cat adapted to cold, mountainous environments. Known for its thick fur and long tail for balance.</div>
+          </div>
+          
+          <div class="example-item">
+            <div class="example-name">Indian Rhinoceros (Rhinoceros unicornis)</div>
+            <div class="example-habitat">Grasslands and forests of Northeast India</div>
+            <div class="example-description">Large herbivorous mammal with distinctive single horn. Vulnerable species with population recovering due to conservation efforts.</div>
+          </div>
+        </div>
+      </aside>
+    </div>
   </main>
 
+  <!-- Scripts -->
   <script>
+    const token = localStorage.getItem('userToken');
+
+    // Logout function
     function logout() {
-      localStorage.removeItem('token');
-      alert("You have been logged out.");
+      localStorage.removeItem('userToken');
       window.location.href = 'login_signup.html';
     }
 
+    // Check if token is expired
     function isTokenExpired(token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -54,50 +441,166 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const token = localStorage.getItem('token');
-      const message = document.getElementById('message');
-
+    // Check authentication
+    function checkAuth() {
       if (!token || isTokenExpired(token)) {
-        message.style.color = 'red';
-        message.textContent = 'Please log in to access this page.';
-        logout();
-        return;
+        showMessage('Please log in to add animal species.');
+        setTimeout(() => logout(), 2000);
+        return false;
+      }
+      return true;
+    }
+
+    // Show message
+    function showMessage(message, type = 'error') {
+      const container = document.getElementById('messageContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      
+      container.innerHTML = '';
+      container.appendChild(alert);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        alert.style.animation = 'slideInDown 0.3s ease reverse';
+        setTimeout(() => alert.remove(), 300);
+      }, 5000);
+    }
+
+    // Set loading state
+    function setLoading(isLoading) {
+      const button = document.getElementById('submitBtn');
+      if (isLoading) {
+        button.classList.add('loading');
+        button.disabled = true;
+      } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+      }
+    }
+
+    // Update character counter
+    function updateCharCounter() {
+      const textarea = document.getElementById('description');
+      const counter = document.getElementById('charCount');
+      const currentLength = textarea.value.length;
+      const maxLength = 1000;
+      
+      counter.textContent = currentLength;
+      
+      // Change color based on usage
+      if (currentLength > maxLength * 0.9) {
+        counter.style.color = 'var(--danger)';
+      } else if (currentLength > maxLength * 0.7) {
+        counter.style.color = 'var(--warning)';
+      } else {
+        counter.style.color = 'var(--text-secondary)';
+      }
+    }
+
+    // Validate form
+    function validateForm() {
+      const animalName = document.getElementById('animalName').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const habitat = document.getElementById('habitat').value.trim();
+
+      if (!animalName) {
+        showMessage('Please enter the animal species name.');
+        return false;
       }
 
+      if (animalName.length < 2) {
+        showMessage('Species name must be at least 2 characters long.');
+        return false;
+      }
+
+      if (!habitat) {
+        showMessage('Please enter the primary habitat.');
+        return false;
+      }
+
+      if (!description) {
+        showMessage('Please provide a species description.');
+        return false;
+      }
+
+      if (description.length < 20) {
+        showMessage('Description must be at least 20 characters long.');
+        return false;
+      }
+
+      if (description.length > 1000) {
+        showMessage('Description must be less than 1000 characters.');
+        return false;
+      }
+
+      return true;
+    }
+
+    // Handle form submission
+    function setupForm() {
       const form = document.getElementById('addAnimalForm');
+      
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        if (!checkAuth() || !validateForm()) return;
 
         const animalName = document.getElementById('animalName').value.trim();
         const description = document.getElementById('description').value.trim();
         const habitat = document.getElementById('habitat').value.trim();
 
+        setLoading(true);
+
         try {
-          const res = await fetch('http://localhost:5000/api/animals', {
+          const response = await fetch('http://localhost:5000/api/animals', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ name: animalName, description, habitat })
+            body: JSON.stringify({ 
+              name: animalName, 
+              description, 
+              habitat 
+            })
           });
 
-          const data = await res.json();
-          if (res.ok) {
-            message.style.color = 'green';
-            message.textContent = 'Animal added successfully!';
+          const data = await response.json();
+          
+          if (response.ok) {
+            showMessage(`${animalName} has been successfully added to the wildlife database!`, 'success');
             form.reset();
+            updateCharCounter();
           } else {
-            message.style.color = 'red';
-            message.textContent = data.message || 'Failed to add animal.';
+            showMessage(data.message || 'Failed to add animal species. Please try again.');
           }
         } catch (error) {
           console.error('Error adding animal:', error);
-          message.style.color = 'red';
-          message.textContent = 'Server error. Please try again.';
+          showMessage('Network error. Please check your connection and try again.');
+        } finally {
+          setLoading(false);
         }
       });
+    }
+
+    // Setup character counter
+    function setupCharCounter() {
+      const textarea = document.getElementById('description');
+      textarea.addEventListener('input', updateCharCounter);
+      updateCharCounter(); // Initialize counter
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!checkAuth()) return;
+      
+      setupForm();
+      setupCharCounter();
     });
   </script>
 </body>
