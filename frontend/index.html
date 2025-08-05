@@ -1,516 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wildlife Tracker - Conservation Through Technology</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  
-  <style>
-    .hero-section {
-      position: relative;
-      height: 100vh;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8)), url('image/img4.jpg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      overflow: hidden;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wildlife Tracker - Conservation Through Technology</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
 
-    .hero-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
-      animation: float 20s ease-in-out infinite;
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 800px;
-      padding: 2rem;
-      animation: fadeInUp 1s ease;
-    }
-
-    .hero-title {
-      font-size: 4rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-      background: linear-gradient(135deg, #ffffff, #10b981);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-subtitle {
-      font-size: 1.5rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    }
-
-    .hero-cta {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .cta-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      background: var(--gradient-green);
-      color: white;
-      text-decoration: none;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-
-    .cta-button.secondary {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .features-section {
-      padding: 6rem 2rem;
-      background: var(--bg-primary);
-    }
-
-    .features-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      background: var(--gradient-green);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .section-subtitle {
-      text-align: center;
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-      margin-bottom: 4rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-bottom: 4rem;
-    }
-
-    .feature-card {
-      background: var(--bg-secondary);
-      padding: 2.5rem;
-      border-radius: 1rem;
-      text-align: center;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--gradient-green);
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-8px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .feature-card:hover::before {
-      transform: scaleX(1);
-    }
-
-    .feature-icon {
-      font-size: 3rem;
-      margin-bottom: 1.5rem;
-      background: var(--gradient-green);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .feature-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: var(--text-primary);
-    }
-
-    .feature-description {
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    .stats-section {
-      background: var(--gradient);
-      color: white;
-      padding: 4rem 2rem;
-      text-align: center;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 2rem;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .stat-item {
-      padding: 1.5rem;
-    }
-
-    .stat-number {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .stat-label {
-      font-size: 1rem;
-      opacity: 0.9;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .cta-section {
-      padding: 6rem 2rem;
-      background: var(--bg-secondary);
-      text-align: center;
-    }
-
-    .cta-content {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .cta-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: var(--text-primary);
-    }
-
-    .cta-description {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-      margin-bottom: 2rem;
-    }
-
-    .scroll-indicator {
-      position: absolute;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      animation: bounce 2s infinite;
-    }
-
-    .scroll-indicator i {
-      font-size: 2rem;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0px);
-      }
-      50% {
-        transform: translateY(-20px);
-      }
-    }
-
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateX(-50%) translateY(0);
-      }
-      40% {
-        transform: translateX(-50%) translateY(-10px);
-      }
-      60% {
-        transform: translateX(-50%) translateY(-5px);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .hero-title {
-        font-size: 2.5rem;
-      }
-      
-      .hero-subtitle {
-        font-size: 1.2rem;
-      }
-      
-      .hero-cta {
-        flex-direction: column;
+    <style>
+      .hero-section {
+        position: relative;
+        height: 100vh;
+        background: linear-gradient(
+            135deg,
+            rgba(15, 23, 42, 0.8),
+            rgba(30, 41, 59, 0.8)
+          ),
+          url("image/img4.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
         align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        overflow: hidden;
       }
-      
+
+      .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+        animation: float 20s ease-in-out infinite;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 800px;
+        padding: 2rem;
+        animation: fadeInUp 1s ease;
+      }
+
+      .hero-title {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        background: linear-gradient(135deg, #ffffff, #10b981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        background: var(--gradient-green);
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+
+      .cta-button.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .features-section {
+        padding: 6rem 2rem;
+        background: var(--bg-primary);
+      }
+
+      .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
       .section-title {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: var(--gradient-green);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .section-subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 4rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+      }
+
+      .feature-card {
+        background: var(--bg-secondary);
+        padding: 2.5rem;
+        border-radius: 1rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-green);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .feature-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        background: var(--gradient-green);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .feature-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .feature-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .cta-section {
+        padding: 6rem 2rem;
+        background: var(--bg-secondary);
+        text-align: center;
+      }
+
+      .cta-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .cta-description {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+      }
+
+      .scroll-indicator {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        animation: bounce 2s infinite;
+      }
+
+      .scroll-indicator i {
         font-size: 2rem;
       }
-    }
-  </style>
-</head>
-<body>
-  <!-- Navigation -->
-  <header>
-    <nav class="navbar">
-      <h1><i class="fas fa-paw"></i> Wildlife Tracker</h1>
-      <div class="nav-links">
-        <a href="index.html" class="active"><i class="fas fa-home"></i> Home</a>
-        <a href="add_animal.html"><i class="fas fa-plus"></i> Add Animal</a>
-        <a href="report_sightings.html"><i class="fas fa-camera"></i> Report</a>
-        <a href="view_animals.html"><i class="fas fa-binoculars"></i> Animals</a>
-        <a href="view_sightings.html"><i class="fas fa-eye"></i> Sightings</a>
-        <a href="alerts.html"><i class="fas fa-exclamation-triangle"></i> Alerts</a>
-        <a href="login_signup.html"><i class="fas fa-user"></i> Login</a>
-      </div>
-    </nav>
-  </header>
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <h1 class="hero-title">
-        <i class="fas fa-leaf"></i>
-        Wildlife Conservation
-      </h1>
-      <p class="hero-subtitle">
-        Track, report, and protect endangered species through cutting-edge technology and community collaboration
-      </p>
-      <div class="hero-cta">
-        <a href="report_sightings.html" class="cta-button">
-          <i class="fas fa-camera"></i>
-          Report Sighting
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateX(-50%) translateY(0);
+        }
+        40% {
+          transform: translateX(-50%) translateY(-10px);
+        }
+        60% {
+          transform: translateX(-50%) translateY(-5px);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1.2rem;
+        }
+
+        .hero-cta {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <header>
+      <nav class="navbar">
+        <h1><i class="fas fa-paw"></i> Wildlife Tracker</h1>
+        <div class="nav-links">
+          <a href="index.html" class="active"
+            ><i class="fas fa-home"></i> Home</a
+          >
+          <a href="add_animal.html"><i class="fas fa-plus"></i> Add Animal</a>
+          <a href="report_sightings.html"
+            ><i class="fas fa-camera"></i> Report</a
+          >
+          <a href="view_animals.html"
+            ><i class="fas fa-binoculars"></i> Animals</a
+          >
+          <a href="view_sightings.html"><i class="fas fa-eye"></i> Sightings</a>
+          <a href="alerts.html"
+            ><i class="fas fa-exclamation-triangle"></i> Alerts</a
+          >
+          <a href="login_signup.html"><i class="fas fa-user"></i> Login</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <i class="fas fa-leaf"></i>
+          Wildlife Conservation
+        </h1>
+        <p class="hero-subtitle">
+          Track, report, and protect endangered species through cutting-edge
+          technology and community collaboration
+        </p>
+        <div class="hero-cta">
+          <a href="report_sightings.html" class="cta-button">
+            <i class="fas fa-camera"></i>
+            Report Sighting
+          </a>
+          <a href="alerts.html" class="cta-button secondary">
+            <i class="fas fa-bell"></i>
+            View Alerts
+          </a>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="features-container">
+        <h2 class="section-title">Powerful Features</h2>
+        <p class="section-subtitle">
+          Everything you need to contribute to wildlife conservation efforts
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-map-marked-alt"></i>
+            </div>
+            <h3 class="feature-title">Real-time Tracking</h3>
+            <p class="feature-description">
+              Track wildlife movements and behaviors with GPS-enabled reporting
+              and interactive maps
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="feature-title">Emergency Alerts</h3>
+            <p class="feature-description">
+              Receive instant notifications about dangerous wildlife activity in
+              your area
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="feature-title">Community Driven</h3>
+            <p class="feature-description">
+              Join a network of conservationists, researchers, and wildlife
+              enthusiasts
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="feature-title">Data Analytics</h3>
+            <p class="feature-description">
+              Advanced analytics help identify patterns and trends in wildlife
+              behavior
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3 class="feature-title">Mobile Friendly</h3>
+            <p class="feature-description">
+              Report sightings on-the-go with our responsive mobile interface
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="feature-title">Secure & Private</h3>
+            <p class="feature-description">
+              Your data is protected with enterprise-grade security and privacy
+              controls
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2 class="cta-title">Ready to Make a Difference?</h2>
+        <p class="cta-description">
+          Join our community of wildlife conservationists and help protect
+          endangered species for future generations.
+        </p>
+        <a href="login_signup.html" class="btn btn-primary">
+          <i class="fas fa-user-plus"></i>
+          Get Started Today
         </a>
-        <a href="alerts.html" class="cta-button secondary">
-          <i class="fas fa-bell"></i>
-          View Alerts
-        </a>
       </div>
-    </div>
-    <div class="scroll-indicator">
-      <i class="fas fa-chevron-down"></i>
-    </div>
-  </section>
+    </section>
 
-  <!-- Features Section -->
-  <section class="features-section">
-    <div class="features-container">
-      <h2 class="section-title">Powerful Features</h2>
-      <p class="section-subtitle">
-        Everything you need to contribute to wildlife conservation efforts
-      </p>
-      
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-map-marked-alt"></i>
-          </div>
-          <h3 class="feature-title">Real-time Tracking</h3>
-          <p class="feature-description">
-            Track wildlife movements and behaviors with GPS-enabled reporting and interactive maps
-          </p>
+    <!-- Alert Modal -->
+    <div id="alertModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i
+              class="fas fa-exclamation-triangle"
+              style="color: var(--danger)"
+            ></i>
+            Wildlife Alert
+          </h2>
+          <button class="modal-close" onclick="closeAlertModal()">
+            &times;
+          </button>
         </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-exclamation-triangle"></i>
-          </div>
-          <h3 class="feature-title">Emergency Alerts</h3>
-          <p class="feature-description">
-            Receive instant notifications about dangerous wildlife activity in your area
-          </p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <h3 class="feature-title">Community Driven</h3>
-          <p class="feature-description">
-            Join a network of conservationists, researchers, and wildlife enthusiasts
-          </p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <h3 class="feature-title">Data Analytics</h3>
-          <p class="feature-description">
-            Advanced analytics help identify patterns and trends in wildlife behavior
-          </p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-mobile-alt"></i>
-          </div>
-          <h3 class="feature-title">Mobile Friendly</h3>
-          <p class="feature-description">
-            Report sightings on-the-go with our responsive mobile interface
-          </p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <h3 class="feature-title">Secure & Private</h3>
-          <p class="feature-description">
-            Your data is protected with enterprise-grade security and privacy controls
-          </p>
+        <div id="alertModalBody">
+          <!-- Alert content will be populated here -->
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- Stats Section -->
-  <section class="stats-section">
-    <h2 class="section-title" style="color: white; margin-bottom: 3rem;">Impact by Numbers</h2>
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-number" id="totalSightings">1,247</div>
-        <div class="stat-label">Wildlife Sightings</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="activeUsers">89</div>
-        <div class="stat-label">Active Contributors</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="speciesTracked">156</div>
-        <div class="stat-label">Species Tracked</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" id="alertsSent">23</div>
-        <div class="stat-label">Alerts Sent</div>
-      </div>
-    </div>
-  </section>
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <div class="cta-content">
-      <h2 class="cta-title">Ready to Make a Difference?</h2>
-      <p class="cta-description">
-        Join our community of wildlife conservationists and help protect endangered species for future generations.
-      </p>
-      <a href="login_signup.html" class="btn btn-primary">
-        <i class="fas fa-user-plus"></i>
-        Get Started Today
-      </a>
-    </div>
-  </section>
+    <script>
+      let socket;
 
-  <!-- Alert Modal -->
-  <div id="alertModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">
-          <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
-          Wildlife Alert
-        </h2>
-        <button class="modal-close" onclick="closeAlertModal()">&times;</button>
-      </div>
-      <div id="alertModalBody">
-        <!-- Alert content will be populated here -->
-      </div>
-    </div>
-  </div>
+      // Initialize socket connection
+      function initSocket() {
+        socket = io("http://localhost:5000");
 
-  <!-- Scripts -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  
-  <script>
-    let socket;
-    
-    // Initialize socket connection
-    function initSocket() {
-      socket = io('http://localhost:5000');
-      
-      socket.on('connect', () => {
-        console.log('Socket connected:', socket.id);
-      });
-      
-      socket.on('alert', (alert) => {
-        console.log('Received alert event:', alert);
-        showAlertModal(alert);
-      });
-    }
+        socket.on("connect", () => {
+          console.log("Socket connected:", socket.id);
+        });
 
-    // Show alert modal
-    function showAlertModal(alert) {
-      const modal = document.getElementById('alertModal');
-      const modalBody = document.getElementById('alertModalBody');
-      
-      const severity = (alert.severity || 'medium').toLowerCase();
-      const severityColor = severity === 'high' ? 'var(--danger)' : 
-                           severity === 'medium' ? 'var(--warning)' : 'var(--success)';
-      
-      modalBody.innerHTML = `
-        <div class="alert alert-${severity === 'high' ? 'danger' : 'warning'}">
+        socket.on("alert", (alert) => {
+          console.log("Received alert event:", alert);
+          showAlertModal(alert);
+        });
+      }
+
+      // Show alert modal
+      function showAlertModal(alert) {
+        const modal = document.getElementById("alertModal");
+        const modalBody = document.getElementById("alertModalBody");
+
+        const severity = (alert.severity || "medium").toLowerCase();
+        const severityColor =
+          severity === "high"
+            ? "var(--danger)"
+            : severity === "medium"
+            ? "var(--warning)"
+            : "var(--success)";
+
+        modalBody.innerHTML = `
+        <div class="alert alert-${severity === "high" ? "danger" : "warning"}">
           <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
             <i class="fas fa-map-marker-alt" style="font-size: 1.5rem; color: ${severityColor};"></i>
             <div>
-              <h3 style="margin: 0; color: var(--text-primary);">${alert.message}</h3>
+              <h3 style="margin: 0; color: var(--text-primary);">${
+                alert.message
+              }</h3>
               <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
-                <i class="fas fa-clock"></i> ${new Date(alert.timestamp).toLocaleString()}
+                <i class="fas fa-clock"></i> ${new Date(
+                  alert.timestamp
+                ).toLocaleString()}
               </p>
             </div>
           </div>
@@ -518,15 +503,17 @@
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
             <div>
               <strong><i class="fas fa-location-dot"></i> Location:</strong><br>
-              ${alert.location || 'Unknown Location'}
+              ${alert.location || "Unknown Location"}
             </div>
             <div>
               <strong><i class="fas fa-mail-bulk"></i> Pincode:</strong><br>
-              ${alert.pincode || 'N/A'}
+              ${alert.pincode || "N/A"}
             </div>
             <div>
               <strong><i class="fas fa-exclamation-circle"></i> Severity:</strong><br>
-              <span class="severity-badge severity-${severity}">${alert.severity || 'Medium'}</span>
+              <span class="severity-badge severity-${severity}">${
+          alert.severity || "Medium"
+        }</span>
             </div>
           </div>
           
@@ -540,96 +527,73 @@
           </div>
         </div>
       `;
-      
-      modal.classList.add('show');
-      
-      // Auto-close after 10 seconds for non-high severity alerts
-      if (severity !== 'high') {
-        setTimeout(() => {
-          if (modal.classList.contains('show')) {
+
+        modal.classList.add("show");
+
+        // Auto-close after 10 seconds for non-high severity alerts
+        if (severity !== "high") {
+          setTimeout(() => {
+            if (modal.classList.contains("show")) {
+              closeAlertModal();
+            }
+          }, 10000);
+        }
+      }
+
+      // Close alert modal
+      function closeAlertModal() {
+        const modal = document.getElementById("alertModal");
+        modal.classList.remove("show");
+      }
+
+      // Intersection Observer for animations
+      function setupScrollAnimations() {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.style.opacity = "1";
+                entry.target.style.transform = "translateY(0)";
+              }
+            });
+          },
+          { threshold: 0.1 }
+        );
+
+        // Observe sections for animation
+        document
+          .querySelectorAll(".features-section, .cta-section")
+          .forEach((section) => {
+            section.style.opacity = "0";
+            section.style.transform = "translateY(30px)";
+            section.style.transition = "all 0.6s ease";
+            observer.observe(section);
+          });
+      }
+
+      // Initialize app
+      document.addEventListener("DOMContentLoaded", () => {
+        initSocket();
+        setupScrollAnimations();
+
+        // Close modal when clicking outside
+        document.getElementById("alertModal").addEventListener("click", (e) => {
+          if (e.target.classList.contains("modal")) {
             closeAlertModal();
           }
-        }, 10000);
-      }
-    }
+        });
 
-    // Close alert modal
-    function closeAlertModal() {
-      const modal = document.getElementById('alertModal');
-      modal.classList.remove('show');
-    }
-
-    // Animate numbers on scroll
-    function animateNumbers() {
-      const stats = [
-        { id: 'totalSightings', target: 1247 },
-        { id: 'activeUsers', target: 89 },
-        { id: 'speciesTracked', target: 156 },
-        { id: 'alertsSent', target: 23 }
-      ];
-      
-      stats.forEach(stat => {
-        const element = document.getElementById(stat.id);
-        let current = 0;
-        const increment = stat.target / 50;
-        
-        const timer = setInterval(() => {
-          current += increment;
-          if (current >= stat.target) {
-            current = stat.target;
-            clearInterval(timer);
-          }
-          element.textContent = Math.floor(current).toLocaleString();
-        }, 50);
-      });
-    }
-
-    // Intersection Observer for animations
-    function setupScrollAnimations() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            if (entry.target.classList.contains('stats-section')) {
-              animateNumbers();
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute("href"));
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth" });
             }
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-          }
-        });
-      }, { threshold: 0.1 });
-
-      // Observe sections for animation
-      document.querySelectorAll('.features-section, .stats-section, .cta-section').forEach(section => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(30px)';
-        section.style.transition = 'all 0.6s ease';
-        observer.observe(section);
-      });
-    }
-
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', () => {
-      initSocket();
-      setupScrollAnimations();
-      
-      // Close modal when clicking outside
-      document.getElementById('alertModal').addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-          closeAlertModal();
-        }
-      });
-      
-      // Smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-          }
+          });
         });
       });
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

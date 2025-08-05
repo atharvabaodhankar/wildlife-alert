@@ -159,6 +159,7 @@ main {
   background: var(--bg-primary);
   transition: all 0.2s ease;
   font-family: inherit;
+  color: #ffff;
 }
 
 .form-control:focus {
